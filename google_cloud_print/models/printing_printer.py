@@ -39,6 +39,9 @@ class PrintingPrinter(models.Model):
     def update_gc_printers(self, user=None):
         _logger.info('Updating Google Cloud Printers')
         gcprinters = self.env['google.cloudprint.config'].get_printers(user)
+
+        server = self.env["printing.server"].search([])
+
         for gcprinter in gcprinters:
             printer = self.get_gc_printer(gcprinter.get('id'), user)
             # TODO remove local printers not any more on google
@@ -58,6 +61,7 @@ class PrintingPrinter(models.Model):
                         gcprinter.get('connectionStatus', False)),
                     'gc_user_id': user and user.id or False,
                     'status_message': gcprinter.get('connectionStatus', False),
+                    'server_id': server[0].id,
                 })
         return True
 
